@@ -1,3 +1,106 @@
 <resources>
-    <string name="app_name">MyMobileProject</string>
+    <string name="app_name">Smart Finance AI</string>
+
+    <!-- Navigation -->
+    <string name="nav_dashboard">Dashboard</string>
+    <string name="nav_transactions">Transactions</string>
+    <string name="nav_groups">Groups</string>
+    <string name="nav_ai_chat">AI Chat</string>
+
+    <!-- Login -->
+    <string name="login_title">Smart Finance AI</string>
+    <string name="login_subtitle">Manage your money smartly with AI</string>
+    <string name="login_google">Sign in with Google</string>
+    <string name="login_error">Login failed. Please try again.</string>
+
+    <!-- Dashboard -->
+    <string name="dashboard_title">Dashboard</string>
+    <string name="dashboard_income">Income</string>
+    <string name="dashboard_expense">Expense</string>
+    <string name="dashboard_balance">Balance</string>
+    <string name="dashboard_this_month">This Month</string>
+    <string name="dashboard_vs_last_month">vs last month</string>
+    <string name="dashboard_spending_by_category">Spending by Category</string>
+    <string name="dashboard_daily_spending">Daily Spending</string>
+    <string name="dashboard_recent_transactions">Recent Transactions</string>
+    <string name="dashboard_ai_insight">AI Insight</string>
+    <string name="dashboard_view_all">View All</string>
+
+    <!-- Transactions -->
+    <string name="transaction_add">Add Transaction</string>
+    <string name="transaction_quick_add">Quick Add (e.g. "Coffee 65")</string>
+    <string name="transaction_amount">Amount</string>
+    <string name="transaction_note">Note</string>
+    <string name="transaction_category">Category</string>
+    <string name="transaction_date">Date</string>
+    <string name="transaction_type_income">Income</string>
+    <string name="transaction_type_expense">Expense</string>
+    <string name="transaction_save">Save</string>
+    <string name="transaction_delete">Delete</string>
+    <string name="transaction_empty">No transactions yet</string>
+    <string name="transaction_empty_subtitle">Tap + to add your first transaction</string>
+    <string name="transaction_photo">Add Photo</string>
+
+    <!-- Categories -->
+    <string name="category_food">Food</string>
+    <string name="category_transport">Transport</string>
+    <string name="category_shopping">Shopping</string>
+    <string name="category_entertainment">Entertainment</string>
+    <string name="category_bills">Bills</string>
+    <string name="category_health">Health</string>
+    <string name="category_education">Education</string>
+    <string name="category_other">Other</string>
+    <string name="category_salary">Salary</string>
+    <string name="category_freelance">Freelance</string>
+
+    <!-- Groups -->
+    <string name="group_title">Groups</string>
+    <string name="group_create">Create Group</string>
+    <string name="group_name">Group Name</string>
+    <string name="group_members">Members</string>
+    <string name="group_add_member">Add Member</string>
+    <string name="group_add_expense">Add Expense</string>
+    <string name="group_expenses">Expenses</string>
+    <string name="group_balances">Balances</string>
+    <string name="group_settlement">Settlement</string>
+    <string name="group_paid_by">Paid by</string>
+    <string name="group_split_equal">Split Equally</string>
+    <string name="group_split_custom">Custom Split</string>
+    <string name="group_split_percentage">By Percentage</string>
+    <string name="group_owes">owes</string>
+    <string name="group_is_owed">is owed</string>
+    <string name="group_settle_up">Settle Up</string>
+    <string name="group_smart_settlement">Smart Settlement</string>
+    <string name="group_smart_settlement_desc">Minimize the number of transactions</string>
+    <string name="group_empty">No groups yet</string>
+    <string name="group_empty_subtitle">Create a group to split expenses with friends</string>
+    <string name="group_top_spender">Top Spender</string>
+    <string name="group_category_summary">Category Summary</string>
+
+    <!-- AI Chat -->
+    <string name="ai_chat_title">AI Financial Advisor</string>
+    <string name="ai_chat_placeholder">Ask about your finances…</string>
+    <string name="ai_chat_suggestion_1">How much did I spend this month?</string>
+    <string name="ai_chat_suggestion_2">How can I save more?</string>
+    <string name="ai_chat_suggestion_3">Analyze my spending</string>
+    <string name="ai_chat_suggestion_4">Suggest a budget for me</string>
+    <string name="ai_chat_welcome">Hi! I\'m your AI financial advisor. Ask me anything about your finances! 💰</string>
+
+    <!-- Receipt Scan -->
+    <string name="receipt_scan_title">Scan Receipt</string>
+    <string name="receipt_scan_capture">Take Photo</string>
+    <string name="receipt_scan_processing">Processing receipt…</string>
+    <string name="receipt_scan_confirm">Confirm &amp; Save</string>
+
+    <!-- General -->
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="settings">Settings</string>
+    <string name="language">Language</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="error_generic">Something went wrong</string>
+    <string name="loading">Loading…</string>
+    <string name="today">Today</string>
+    <string name="yesterday">Yesterday</string>
 </resources>

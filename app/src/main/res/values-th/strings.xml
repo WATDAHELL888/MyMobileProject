@@ -1,0 +1,106 @@
+<resources>
+    <string name="app_name">Smart Finance AI</string>
+
+    <!-- Navigation -->
+    <string name="nav_dashboard">แดชบอร์ด</string>
+    <string name="nav_transactions">รายการ</string>
+    <string name="nav_groups">กลุ่ม</string>
+    <string name="nav_ai_chat">AI แชท</string>
+
+    <!-- Login -->
+    <string name="login_title">Smart Finance AI</string>
+    <string name="login_subtitle">จัดการเงินอย่างฉลาดด้วย AI</string>
+    <string name="login_google">เข้าสู่ระบบด้วย Google</string>
+    <string name="login_error">เข้าสู่ระบบไม่สำเร็จ กรุณาลองอีกครั้ง</string>
+
+    <!-- Dashboard -->
+    <string name="dashboard_title">แดชบอร์ด</string>
+    <string name="dashboard_income">รายรับ</string>
+    <string name="dashboard_expense">รายจ่าย</string>
+    <string name="dashboard_balance">คงเหลือ</string>
+    <string name="dashboard_this_month">เดือนนี้</string>
+    <string name="dashboard_vs_last_month">เทียบกับเดือนก่อน</string>
+    <string name="dashboard_spending_by_category">สัดส่วนการใช้จ่าย</string>
+    <string name="dashboard_daily_spending">รายจ่ายรายวัน</string>
+    <string name="dashboard_recent_transactions">รายการล่าสุด</string>
+    <string name="dashboard_ai_insight">AI วิเคราะห์</string>
+    <string name="dashboard_view_all">ดูทั้งหมด</string>
+
+    <!-- Transactions -->
+    <string name="transaction_add">เพิ่มรายการ</string>
+    <string name="transaction_quick_add">เพิ่มด่วน (เช่น "กาแฟ 65")</string>
+    <string name="transaction_amount">จำนวนเงิน</string>
+    <string name="transaction_note">โน้ต</string>
+    <string name="transaction_category">หมวดหมู่</string>
+    <string name="transaction_date">วันที่</string>
+    <string name="transaction_type_income">รายรับ</string>
+    <string name="transaction_type_expense">รายจ่าย</string>
+    <string name="transaction_save">บันทึก</string>
+    <string name="transaction_delete">ลบ</string>
+    <string name="transaction_empty">ยังไม่มีรายการ</string>
+    <string name="transaction_empty_subtitle">แตะ + เพื่อเพิ่มรายการแรก</string>
+    <string name="transaction_photo">เพิ่มรูป</string>
+
+    <!-- Categories -->
+    <string name="category_food">อาหาร</string>
+    <string name="category_transport">เดินทาง</string>
+    <string name="category_shopping">ช้อปปิ้ง</string>
+    <string name="category_entertainment">บันเทิง</string>
+    <string name="category_bills">บิล/ค่าน้ำค่าไฟ</string>
+    <string name="category_health">สุขภาพ</string>
+    <string name="category_education">การศึกษา</string>
+    <string name="category_other">อื่นๆ</string>
+    <string name="category_salary">เงินเดือน</string>
+    <string name="category_freelance">ฟรีแลนซ์</string>
+
+    <!-- Groups -->
+    <string name="group_title">กลุ่ม</string>
+    <string name="group_create">สร้างกลุ่ม</string>
+    <string name="group_name">ชื่อกลุ่ม</string>
+    <string name="group_members">สมาชิก</string>
+    <string name="group_add_member">เพิ่มสมาชิก</string>
+    <string name="group_add_expense">เพิ่มรายจ่าย</string>
+    <string name="group_expenses">รายจ่าย</string>
+    <string name="group_balances">ยอดคงค้าง</string>
+    <string name="group_settlement">การชำระ</string>
+    <string name="group_paid_by">จ่ายโดย</string>
+    <string name="group_split_equal">หารเท่ากัน</string>
+    <string name="group_split_custom">กำหนดเอง</string>
+    <string name="group_split_percentage">ตามเปอร์เซ็นต์</string>
+    <string name="group_owes">เป็นหนี้</string>
+    <string name="group_is_owed">ต้องได้รับ</string>
+    <string name="group_settle_up">ชำระหนี้</string>
+    <string name="group_smart_settlement">Smart Settlement</string>
+    <string name="group_smart_settlement_desc">ลดจำนวนการโอนให้น้อยที่สุด</string>
+    <string name="group_empty">ยังไม่มีกลุ่ม</string>
+    <string name="group_empty_subtitle">สร้างกลุ่มเพื่อหารค่าใช้จ่ายกับเพื่อน</string>
+    <string name="group_top_spender">จ่ายเยอะสุด</string>
+    <string name="group_category_summary">สรุปตามหมวด</string>
+
+    <!-- AI Chat -->
+    <string name="ai_chat_title">AI ที่ปรึกษาการเงิน</string>
+    <string name="ai_chat_placeholder">ถามเกี่ยวกับการเงินของคุณ…</string>
+    <string name="ai_chat_suggestion_1">เดือนนี้ฉันใช้เงินเท่าไหร่?</string>
+    <string name="ai_chat_suggestion_2">ควรประหยัดยังไงดี?</string>
+    <string name="ai_chat_suggestion_3">วิเคราะห์การใช้จ่ายของฉัน</string>
+    <string name="ai_chat_suggestion_4">แนะนำ budget ให้หน่อย</string>
+    <string name="ai_chat_welcome">สวัสดีครับ! ผมเป็น AI ที่ปรึกษาการเงินของคุณ ถามอะไรเกี่ยวกับการเงินได้เลยครับ! 💰</string>
+
+    <!-- Receipt Scan -->
+    <string name="receipt_scan_title">สแกนใบเสร็จ</string>
+    <string name="receipt_scan_capture">ถ่ายรูป</string>
+    <string name="receipt_scan_processing">กำลังประมวลผลใบเสร็จ…</string>
+    <string name="receipt_scan_confirm">ยืนยันและบันทึก</string>
+
+    <!-- General -->
+    <string name="save">บันทึก</string>
+    <string name="cancel">ยกเลิก</string>
+    <string name="delete">ลบ</string>
+    <string name="settings">ตั้งค่า</string>
+    <string name="language">ภาษา</string>
+    <string name="sign_out">ออกจากระบบ</string>
+    <string name="error_generic">เกิดข้อผิดพลาด</string>
+    <string name="loading">กำลังโหลด…</string>
+    <string name="today">วันนี้</string>
+    <string name="yesterday">เมื่อวาน</string>
+</resources>

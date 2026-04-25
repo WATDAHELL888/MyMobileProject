@@ -22,5 +22,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "MyMobileProject"
+rootProject.name = "SmartFinanceAI"
 include(":app")
