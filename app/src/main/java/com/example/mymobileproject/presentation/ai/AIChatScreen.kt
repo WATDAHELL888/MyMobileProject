@@ -74,13 +74,13 @@ fun AIChatScreen(viewModel: AIChatViewModel = hiltViewModel()) {
                     Spacer(Modifier.height(8.dp))
                     Text("💡 Suggestions", style = MaterialTheme.typography.labelLarge, color = TextTertiary)
                     Spacer(Modifier.height(8.dp))
+                    val suggestions = listOf(
+                        stringResource(R.string.ai_chat_suggestion_1),
+                        stringResource(R.string.ai_chat_suggestion_2),
+                        stringResource(R.string.ai_chat_suggestion_3),
+                        stringResource(R.string.ai_chat_suggestion_4)
+                    )
                     LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        val suggestions = listOf(
-                            stringResource(R.string.ai_chat_suggestion_1),
-                            stringResource(R.string.ai_chat_suggestion_2),
-                            stringResource(R.string.ai_chat_suggestion_3),
-                            stringResource(R.string.ai_chat_suggestion_4)
-                        )
                         items(suggestions) { suggestion ->
                             Surface(
                                 modifier = Modifier.clip(RoundedCornerShape(20.dp)).clickable { viewModel.sendSuggestion(suggestion) },

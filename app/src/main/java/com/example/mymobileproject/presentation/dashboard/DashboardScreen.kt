@@ -143,7 +143,7 @@ private fun SummaryCard(income: Double, expense: Double, balance: Double) {
                 .background(
                     Brush.linearGradient(
                         colors = listOf(Emerald600, Emerald500, Blue500),
-                        start = Offset(0f, 0f), end = Offset(Float.MAX_VALUE, Float.MAX_VALUE)
+                        start = Offset(0f, 0f), end = Offset(1000f, 1000f)
                     ),
                     shape = RoundedCornerShape(20.dp)
                 )
@@ -259,7 +259,8 @@ private fun DailySpendingCard(dailySpending: Map<Int, Double>) {
             Text(stringResource(R.string.dashboard_daily_spending), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
             Spacer(Modifier.height(12.dp))
             Row(modifier = Modifier.fillMaxWidth().height(100.dp), horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.Bottom) {
-                (1..java.time.LocalDate.now().dayOfMonth).takeLast(14).forEach { day ->
+                val days = (1..java.time.LocalDate.now().dayOfMonth).toList().takeLast(14)
+                for (day in days) {
                     val amount = dailySpending[day] ?: 0.0
                     val h = ((amount / maxAmount) * 80).toFloat().coerceAtLeast(4f)
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {

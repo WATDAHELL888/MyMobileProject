@@ -1,7 +1,7 @@
 [versions]
 agp = "9.1.1"
 kotlin = "2.2.10"
-ksp = "2.2.10-1.0.31"
+ksp = "2.2.10-2.0.2"
 coreKtx = "1.18.0"
 junit = "4.13.2"
 junitVersion = "1.3.0"
@@ -9,10 +9,10 @@ espressoCore = "3.7.0"
 lifecycleRuntimeKtx = "2.10.0"
 activityCompose = "1.13.0"
 composeBom = "2026.02.01"
-hilt = "2.56.2"
+hilt = "2.59.2"
 hiltNavigationCompose = "1.2.0"
 navigationCompose = "2.9.0"
-firebaseBom = "33.8.0"
+firebaseBom = "34.12.0"
 credentials = "1.5.0"
 googleid = "1.1.1"
 retrofit = "2.11.0"
@@ -24,7 +24,7 @@ mlkitTextRecognition = "16.0.1"
 camerax = "1.5.0"
 datastore = "1.1.4"
 splashscreen = "1.0.1"
-googleServices = "4.4.2"
+googleServices = "4.4.4"
 kotlinxCoroutines = "1.9.0"
 material3 = "1.3.1"
 composeGoogleFonts = "1.7.5"
@@ -64,9 +64,10 @@ hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-com
 
 # Firebase
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
-firebase-auth = { group = "com.google.firebase", name = "firebase-auth-ktx" }
-firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore-ktx" }
-firebase-storage = { group = "com.google.firebase", name = "firebase-storage-ktx" }
+firebase-auth = { group = "com.google.firebase", name = "firebase-auth" }
+firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore" }
+firebase-storage = { group = "com.google.firebase", name = "firebase-storage" }
+firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
 
 # Google Sign-In (Credential Manager)
 credentials = { group = "androidx.credentials", name = "credentials", version.ref = "credentials" }

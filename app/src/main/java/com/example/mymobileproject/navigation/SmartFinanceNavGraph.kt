@@ -1,9 +1,13 @@
 package com.example.mymobileproject.navigation
 
-import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChatBubble
@@ -61,6 +65,21 @@ val bottomNavItems = listOf(
     BottomNavItem(Screen.AIChat.route, R.string.nav_ai_chat, Icons.Filled.ChatBubble, Icons.Outlined.ChatBubbleOutline),
 )
 
+// Animation duration
+private const val ANIM_DURATION = 350
+
+// Slide-up enter (for modal-style sub-screens like AddTransaction)
+private val slideUpEnter = slideInVertically(tween(ANIM_DURATION, easing = FastOutSlowInEasing)) { it / 3 } +
+        fadeIn(tween(ANIM_DURATION, easing = FastOutSlowInEasing))
+private val slideDownExit = slideOutVertically(tween(ANIM_DURATION, easing = FastOutSlowInEasing)) { it / 3 } +
+        fadeOut(tween(ANIM_DURATION, easing = FastOutSlowInEasing))
+
+// Slide-right enter (for detail screens like GroupDetail)
+private val slideRightEnter = slideInHorizontally(tween(ANIM_DURATION, easing = FastOutSlowInEasing)) { it / 3 } +
+        fadeIn(tween(ANIM_DURATION, easing = FastOutSlowInEasing))
+private val slideLeftExit = slideOutHorizontally(tween(ANIM_DURATION, easing = FastOutSlowInEasing)) { it / 3 } +
+        fadeOut(tween(ANIM_DURATION, easing = FastOutSlowInEasing))
+
 @Composable
 fun SmartFinanceNavGraph(
     isLoggedIn: Boolean,
@@ -110,9 +129,13 @@ fun SmartFinanceNavGraph(
             navController = navController,
             startDestination = startDestination,
             modifier = Modifier.padding(innerPadding),
-            enterTransition = { fadeIn(tween(300)) },
-            exitTransition = { fadeOut(tween(300)) }
+            // Default: smooth crossfade for tab switches
+            enterTransition = { fadeIn(tween(250)) },
+            exitTransition = { fadeOut(tween(250)) },
+            popEnterTransition = { fadeIn(tween(250)) },
+            popExitTransition = { fadeOut(tween(250)) }
         ) {
+            // ── Login ──
             composable(Screen.Login.route) {
                 LoginScreen(
                     onLoginSuccess = {
@@ -123,6 +146,7 @@ fun SmartFinanceNavGraph(
                 )
             }
 
+            // ── Tab Screens (smooth crossfade by default) ──
             composable(Screen.Dashboard.route) {
                 DashboardScreen(
                     onNavigateToTransactions = { navController.navigate(Screen.TransactionList.route) },
@@ -138,10 +162,6 @@ fun SmartFinanceNavGraph(
                 )
             }
 
-            composable(Screen.AddTransaction.route) {
-                AddTransactionScreen(onNavigateBack = { navController.popBackStack() })
-            }
-
             composable(Screen.GroupList.route) {
                 GroupListScreen(
                     onNavigateToGroup = { groupId ->
@@ -151,13 +171,49 @@ fun SmartFinanceNavGraph(
                 )
             }
 
-            composable(Screen.CreateGroup.route) {
+            composable(Screen.AIChat.route) {
+                AIChatScreen()
+            }
+
+            // ── Sub Screens: Slide-up (modal style) ──
+            composable(
+                route = Screen.AddTransaction.route,
+                enterTransition = { slideUpEnter },
+                exitTransition = { fadeOut(tween(200)) },
+                popEnterTransition = { fadeIn(tween(200)) },
+                popExitTransition = { slideDownExit }
+            ) {
+                AddTransactionScreen(onNavigateBack = { navController.popBackStack() })
+            }
+
+            composable(
+                route = Screen.CreateGroup.route,
+                enterTransition = { slideUpEnter },
+                exitTransition = { fadeOut(tween(200)) },
+                popEnterTransition = { fadeIn(tween(200)) },
+                popExitTransition = { slideDownExit }
+            ) {
                 CreateGroupScreen(onNavigateBack = { navController.popBackStack() })
             }
 
             composable(
+                route = Screen.ReceiptScan.route,
+                enterTransition = { slideUpEnter },
+                exitTransition = { fadeOut(tween(200)) },
+                popEnterTransition = { fadeIn(tween(200)) },
+                popExitTransition = { slideDownExit }
+            ) {
+                ReceiptScanScreen(onNavigateBack = { navController.popBackStack() })
+            }
+
+            // ── Sub Screens: Slide-right (detail style) ──
+            composable(
                 route = Screen.GroupDetail.route,
-                arguments = listOf(navArgument("groupId") { type = NavType.StringType })
+                arguments = listOf(navArgument("groupId") { type = NavType.StringType }),
+                enterTransition = { slideRightEnter },
+                exitTransition = { fadeOut(tween(200)) },
+                popEnterTransition = { fadeIn(tween(200)) },
+                popExitTransition = { slideLeftExit }
             ) {
                 GroupDetailScreen(
                     onNavigateBack = { navController.popBackStack() },
@@ -169,17 +225,13 @@ fun SmartFinanceNavGraph(
 
             composable(
                 route = Screen.AddGroupExpense.route,
-                arguments = listOf(navArgument("groupId") { type = NavType.StringType })
+                arguments = listOf(navArgument("groupId") { type = NavType.StringType }),
+                enterTransition = { slideUpEnter },
+                exitTransition = { fadeOut(tween(200)) },
+                popEnterTransition = { fadeIn(tween(200)) },
+                popExitTransition = { slideDownExit }
             ) {
                 AddGroupExpenseScreen(onNavigateBack = { navController.popBackStack() })
-            }
-
-            composable(Screen.AIChat.route) {
-                AIChatScreen()
-            }
-
-            composable(Screen.ReceiptScan.route) {
-                ReceiptScanScreen(onNavigateBack = { navController.popBackStack() })
             }
         }
     }

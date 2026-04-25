@@ -55,7 +55,7 @@ fun LoginScreen(
                 Brush.linearGradient(
                     colors = listOf(DarkBg, Color(0xFF0D2137), DarkSurface),
                     start = Offset(0f, 0f),
-                    end = Offset(Float.MAX_VALUE, Float.MAX_VALUE)
+                    end = Offset(1000f, 1000f)
                 )
             ),
         contentAlignment = Alignment.Center

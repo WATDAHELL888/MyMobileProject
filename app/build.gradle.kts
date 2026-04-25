@@ -1,10 +1,18 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
     alias(libs.plugins.google.services)
+}
+
+// Load local.properties for API keys
+val localProps = Properties()
+val localPropsFile = rootProject.file("local.properties")
+if (localPropsFile.exists()) {
+    localPropsFile.inputStream().use { localProps.load(it) }
 }
 
 android {
@@ -24,12 +32,12 @@ android {
         buildConfigField(
             "String",
             "OPENAI_API_KEY",
-            "\"${project.findProperty("OPENAI_API_KEY") ?: ""}\""
+            "\"${localProps.getProperty("OPENAI_API_KEY", "")}\""
         )
         buildConfigField(
             "String",
             "WEB_CLIENT_ID",
-            "\"${project.findProperty("WEB_CLIENT_ID") ?: ""}\""
+            "\"${localProps.getProperty("WEB_CLIENT_ID", "")}\""
         )
     }
 
@@ -45,9 +53,6 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
-    }
-    kotlinOptions {
-        jvmTarget = "17"
     }
     buildFeatures {
         compose = true
@@ -88,6 +93,7 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.storage)
+    implementation(libs.firebase.analytics)
 
     // Google Sign-In
     implementation(libs.credentials)
