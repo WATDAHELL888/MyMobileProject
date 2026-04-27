@@ -99,14 +99,17 @@ data class GroupDetailState(
     val isLoading: Boolean = true,
     val newMemberName: String = "",
     val isAddingMember: Boolean = false,
-    val isDeleted: Boolean = false
+    val isDeleted: Boolean = false,
+    val aiAnalysis: String? = null,
+    val isAnalyzing: Boolean = false
 )
 
 @HiltViewModel
 class GroupDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val repo: GroupRepository,
-    private val smartSettlement: SmartSettlementUseCase
+    private val smartSettlement: SmartSettlementUseCase,
+    private val aiRepo: com.example.mymobileproject.domain.repository.AIRepository
 ) : ViewModel() {
     private val groupId: String = savedStateHandle["groupId"] ?: ""
     private val _state = MutableStateFlow(GroupDetailState())
@@ -176,6 +179,17 @@ class GroupDetailViewModel @Inject constructor(
             e.splits.forEach { (uid, share) -> bal[uid] = (bal[uid] ?: 0.0) - share }
         }
         return bal
+    }
+
+    fun analyzeWithAI() {
+        val s = _state.value
+        val group = s.group ?: return
+        viewModelScope.launch {
+            _state.update { it.copy(isAnalyzing = true) }
+            aiRepo.analyzeGroupSpending(group.name, s.expenses, group.memberNames)
+                .onSuccess { result -> _state.update { it.copy(aiAnalysis = result, isAnalyzing = false) } }
+                .onFailure { _state.update { it.copy(aiAnalysis = "ไม่สามารถวิเคราะห์ได้ ลองอีกครั้ง", isAnalyzing = false) } }
+        }
     }
 }
 

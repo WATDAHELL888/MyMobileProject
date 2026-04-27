@@ -48,17 +48,31 @@ fun DashboardScreen(
         ) {
             // Header
             item {
-                Text(
-                    stringResource(R.string.dashboard_title),
-                    style = MaterialTheme.typography.headlineLarge,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-                Spacer(Modifier.height(4.dp))
-                Text(
-                    stringResource(R.string.dashboard_this_month),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = TextSecondary
-                )
+                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    Column(Modifier.weight(1f)) {
+                        Text(
+                            stringResource(R.string.dashboard_title),
+                            style = MaterialTheme.typography.headlineLarge,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                        Spacer(Modifier.height(4.dp))
+                        Text(
+                            stringResource(R.string.dashboard_this_month),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = TextSecondary
+                        )
+                    }
+                    
+                    // Notification Bell
+                    Box(Modifier.clickable { viewModel.toggleNotifications() }.padding(8.dp)) {
+                        Icon(Icons.Filled.Notifications, "Notifications", tint = MaterialTheme.colorScheme.onBackground)
+                        if (uiState.notifications.isNotEmpty()) {
+                            Box(
+                                Modifier.size(8.dp).clip(CircleShape).background(ExpenseRed).align(Alignment.TopEnd)
+                            )
+                        }
+                    }
+                }
             }
 
             // Summary Cards
@@ -117,15 +131,52 @@ fun DashboardScreen(
             item { Spacer(Modifier.height(80.dp)) }
         }
 
-        // FAB
-        FloatingActionButton(
-            onClick = onNavigateToAddTransaction,
+        // Floating Action Buttons
+        Column(
             modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
-            containerColor = Emerald500,
-            contentColor = Color.White,
-            shape = RoundedCornerShape(16.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalAlignment = Alignment.End
         ) {
-            Icon(Icons.Filled.Add, "Add")
+            FloatingActionButton(
+                onClick = onNavigateToAddTransaction,
+                containerColor = Emerald500,
+                contentColor = Color.White,
+                shape = RoundedCornerShape(16.dp)
+            ) { Icon(Icons.Filled.Add, "Add Transaction") }
+        }
+
+        // Notification Dialog
+        if (uiState.showNotifications) {
+            AlertDialog(
+                onDismissRequest = { viewModel.toggleNotifications() },
+                title = { Text("Smart Notifications", color = MaterialTheme.colorScheme.onSurface) },
+                text = {
+                    if (uiState.notifications.isEmpty()) {
+                        Text("ไม่มีการแจ้งเตือนใหม่ในขณะนี้", color = TextTertiary)
+                    } else {
+                        LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                            items(uiState.notifications) { notif ->
+                                Surface(
+                                    shape = RoundedCornerShape(12.dp),
+                                    color = if (notif.type == NotificationType.OVERSPEND) ExpenseRed.copy(alpha = 0.1f)
+                                           else if (notif.type == NotificationType.DEBT) Color(0xFFF59E0B).copy(alpha = 0.1f)
+                                           else Blue500.copy(alpha = 0.1f)
+                                ) {
+                                    Column(Modifier.padding(12.dp)) {
+                                        Text(notif.title, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
+                                        Spacer(Modifier.height(4.dp))
+                                        Text(notif.message, style = MaterialTheme.typography.bodySmall, color = TextSecondary)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                confirmButton = {
+                    TextButton(onClick = { viewModel.toggleNotifications() }) { Text("ปิด") }
+                },
+                containerColor = DarkCard
+            )
         }
     }
 }

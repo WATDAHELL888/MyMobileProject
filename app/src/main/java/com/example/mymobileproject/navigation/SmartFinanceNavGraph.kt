@@ -8,6 +8,7 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChatBubble
@@ -95,7 +96,11 @@ fun SmartFinanceNavGraph(
 
     Scaffold(
         bottomBar = {
-            if (showBottomBar) {
+            AnimatedVisibility(
+                visible = showBottomBar,
+                enter = fadeIn(tween(500)),
+                exit = fadeOut(tween(500))
+            ) {
                 NavigationBar(containerColor = DarkCard) {
                     bottomNavItems.forEach { item ->
                         val selected = navBackStackEntry?.destination?.hierarchy?.any {
@@ -126,13 +131,33 @@ fun SmartFinanceNavGraph(
             }
         }
     ) { innerPadding ->
+        val tabRoutes = bottomNavItems.map { it.route }
+        fun getTabIndex(route: String?) = tabRoutes.indexOf(route)
+
         NavHost(
             navController = navController,
             startDestination = startDestination,
             modifier = Modifier.padding(innerPadding),
-            // Default: smooth crossfade for tab switches
-            enterTransition = { fadeIn(tween(250)) },
-            exitTransition = { fadeOut(tween(250)) },
+            enterTransition = {
+                val initialIndex = getTabIndex(initialState.destination.route)
+                val targetIndex = getTabIndex(targetState.destination.route)
+                if (initialIndex != -1 && targetIndex != -1 && initialIndex != targetIndex) {
+                    val direction = if (targetIndex > initialIndex) 1 else -1
+                    slideInHorizontally(tween(ANIM_DURATION, easing = FastOutSlowInEasing)) { it / 4 * direction } + fadeIn(tween(ANIM_DURATION))
+                } else {
+                    fadeIn(tween(250))
+                }
+            },
+            exitTransition = {
+                val initialIndex = getTabIndex(initialState.destination.route)
+                val targetIndex = getTabIndex(targetState.destination.route)
+                if (initialIndex != -1 && targetIndex != -1 && initialIndex != targetIndex) {
+                    val direction = if (targetIndex > initialIndex) -1 else 1
+                    slideOutHorizontally(tween(ANIM_DURATION, easing = FastOutSlowInEasing)) { it / 4 * direction } + fadeOut(tween(ANIM_DURATION))
+                } else {
+                    fadeOut(tween(250))
+                }
+            },
             popEnterTransition = { fadeIn(tween(250)) },
             popExitTransition = { fadeOut(tween(250)) }
         ) {
@@ -164,7 +189,14 @@ fun SmartFinanceNavGraph(
             }
 
             // ── Tab Screens (smooth crossfade by default) ──
-            composable(Screen.Dashboard.route) {
+            composable(
+                route = Screen.Dashboard.route,
+                enterTransition = {
+                    if (initialState.destination.route == Screen.Splash.route) {
+                        fadeIn(tween(1000)) + slideInVertically(tween(1000)) { it / 20 }
+                    } else null // Fallback to NavHost default
+                }
+            ) {
                 DashboardScreen(
                     onNavigateToTransactions = { navController.navigate(Screen.TransactionList.route) },
                     onNavigateToAddTransaction = { navController.navigate(Screen.AddTransaction.route) },

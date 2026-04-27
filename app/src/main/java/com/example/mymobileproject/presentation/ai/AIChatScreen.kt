@@ -17,8 +17,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -49,7 +47,28 @@ fun AIChatScreen(viewModel: AIChatViewModel = hiltViewModel()) {
                 Spacer(Modifier.width(12.dp))
                 Column {
                     Text(stringResource(R.string.ai_chat_title), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
-                    Text("Online", style = MaterialTheme.typography.labelSmall, color = Emerald400)
+                    Text("Online • AI ที่ปรึกษาการเงิน", style = MaterialTheme.typography.labelSmall, color = Emerald400)
+                }
+            }
+        }
+
+        // Quick Action Buttons
+        Surface(color = DarkSurface, modifier = Modifier.fillMaxWidth()) {
+            LazyRow(
+                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                item {
+                    QuickActionChip("🔍 วิเคราะห์", Emerald500) { viewModel.analyzeSpending() }
+                }
+                item {
+                    QuickActionChip("📊 แนะนำ Budget", Blue500) { viewModel.recommendBudget() }
+                }
+                item {
+                    QuickActionChip("⚠️ ตรวจผิดปกติ", Color(0xFFEF4444)) { viewModel.detectAnomalies() }
+                }
+                item {
+                    QuickActionChip("💡 ประหยัดยังไง", Color(0xFFFBBF24)) { viewModel.sendSuggestion("ช่วยแนะนำวิธีประหยัดเงิน") }
                 }
             }
         }
@@ -68,17 +87,18 @@ fun AIChatScreen(viewModel: AIChatViewModel = hiltViewModel()) {
                 item { TypingIndicator() }
             }
 
-            // Suggestions (show only if few messages)
+            // Suggestions (show only at start)
             if (state.messages.size <= 2) {
                 item {
                     Spacer(Modifier.height(8.dp))
-                    Text("💡 Suggestions", style = MaterialTheme.typography.labelLarge, color = TextTertiary)
+                    Text("💡 ลองถาม:", style = MaterialTheme.typography.labelLarge, color = TextTertiary)
                     Spacer(Modifier.height(8.dp))
                     val suggestions = listOf(
-                        stringResource(R.string.ai_chat_suggestion_1),
-                        stringResource(R.string.ai_chat_suggestion_2),
-                        stringResource(R.string.ai_chat_suggestion_3),
-                        stringResource(R.string.ai_chat_suggestion_4)
+                        "เดือนนี้ใช้เงินเท่าไหร่?",
+                        "ช่วยวิเคราะห์การใช้จ่าย",
+                        "แนะนำ budget ให้หน่อย",
+                        "มีอะไรผิดปกติไหม?",
+                        "ช่วยแนะนำวิธีประหยัด"
                     )
                     LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         items(suggestions) { suggestion ->
@@ -124,6 +144,18 @@ fun AIChatScreen(viewModel: AIChatViewModel = hiltViewModel()) {
 }
 
 @Composable
+private fun QuickActionChip(label: String, color: Color, onClick: () -> Unit) {
+    Surface(
+        modifier = Modifier.clip(RoundedCornerShape(20.dp)).clickable { onClick() },
+        shape = RoundedCornerShape(20.dp),
+        color = color.copy(alpha = 0.12f)
+    ) {
+        Text(label, Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
+            color = color, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Medium)
+    }
+}
+
+@Composable
 private fun ChatBubble(msg: AIMessage) {
     val isUser = msg.role == AIRole.USER
     Row(
@@ -144,13 +176,14 @@ private fun ChatBubble(msg: AIMessage) {
                 bottomEnd = if (isUser) 4.dp else 16.dp
             ),
             color = if (isUser) Blue500 else DarkCard,
-            modifier = Modifier.widthIn(max = 280.dp)
+            modifier = Modifier.widthIn(max = 300.dp)
         ) {
             Text(
                 msg.content,
                 modifier = Modifier.padding(12.dp),
                 color = if (isUser) Color.White else MaterialTheme.colorScheme.onSurface,
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium,
+                lineHeight = 22.sp
             )
         }
     }

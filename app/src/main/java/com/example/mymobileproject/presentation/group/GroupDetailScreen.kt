@@ -324,6 +324,53 @@ private fun SummaryTab(state: GroupDetailState, memberNames: Map<String, String>
             }
         }
 
+        // AI Group Analysis
+        item {
+            Card(Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp), colors = CardDefaults.cardColors(containerColor = DarkCard)) {
+                Column(Modifier.padding(16.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text("🤖 AI วิเคราะห์กลุ่ม", style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.weight(1f))
+                        Button(
+                            onClick = { viewModel.analyzeWithAI() },
+                            enabled = !state.isAnalyzing && state.expenses.isNotEmpty(),
+                            colors = ButtonDefaults.buttonColors(containerColor = Emerald500),
+                            shape = RoundedCornerShape(10.dp),
+                            contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp)
+                        ) {
+                            if (state.isAnalyzing) {
+                                CircularProgressIndicator(Modifier.size(16.dp), strokeWidth = 2.dp, color = Color.White)
+                                Spacer(Modifier.width(6.dp))
+                                Text("กำลังวิเคราะห์...", style = MaterialTheme.typography.labelMedium)
+                            } else {
+                                Text("วิเคราะห์", style = MaterialTheme.typography.labelMedium)
+                            }
+                        }
+                    }
+                    if (state.aiAnalysis != null) {
+                        Spacer(Modifier.height(12.dp))
+                        Surface(
+                            shape = RoundedCornerShape(12.dp),
+                            color = Emerald500.copy(alpha = 0.08f),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                state.aiAnalysis!!,
+                                modifier = Modifier.padding(12.dp),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                lineHeight = 22.sp
+                            )
+                        }
+                    } else if (state.expenses.isEmpty()) {
+                        Spacer(Modifier.height(8.dp))
+                        Text("เพิ่มรายการค่าใช้จ่ายก่อนเพื่อให้ AI วิเคราะห์", style = MaterialTheme.typography.bodySmall, color = TextTertiary)
+                    }
+                }
+            }
+        }
+
         // Add member section
         item {
             Card(Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp), colors = CardDefaults.cardColors(containerColor = DarkCard)) {

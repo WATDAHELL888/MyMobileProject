@@ -48,6 +48,7 @@ data class AddTransactionState(
     val date: LocalDate = LocalDate.now(),
     val quickAddText: String = "",
     val isSaving: Boolean = false,
+    val isScanning: Boolean = false,
     val saved: Boolean = false,
     val error: String? = null
 )
@@ -85,6 +86,22 @@ class AddTransactionViewModel @Inject constructor(
             addUseCase(Transaction(amount = amt, type = s.type, category = s.category, note = s.note, date = s.date))
                 .onSuccess { _state.update { it.copy(isSaving = false, saved = true) } }
                 .onFailure { e -> _state.update { it.copy(isSaving = false, error = e.message) } }
+        }
+    }
+
+    fun scanReceiptMock() {
+        viewModelScope.launch {
+            _state.update { it.copy(isScanning = true, error = null) }
+            kotlinx.coroutines.delay(1500) // Simulate OCR processing
+            _state.update {
+                it.copy(
+                    isScanning = false,
+                    amount = "120",
+                    note = "Starbucks Coffee",
+                    type = TransactionType.EXPENSE,
+                    category = TransactionCategory.FOOD
+                )
+            }
         }
     }
 }

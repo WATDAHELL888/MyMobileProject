@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.FlashOn
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -52,16 +53,35 @@ fun AddTransactionScreen(
 
         Spacer(Modifier.height(16.dp))
 
-        // Quick Add
-        OutlinedTextField(
-            value = state.quickAddText,
-            onValueChange = { viewModel.quickAdd(it) },
-            modifier = Modifier.fillMaxWidth(),
-            placeholder = { Text(stringResource(R.string.transaction_quick_add)) },
-            leadingIcon = { Icon(Icons.Filled.FlashOn, null, tint = Emerald400) },
-            shape = RoundedCornerShape(12.dp),
-            singleLine = true
-        )
+        // Quick Add & Scan
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+            OutlinedTextField(
+                value = state.quickAddText,
+                onValueChange = { viewModel.quickAdd(it) },
+                modifier = Modifier.weight(1f),
+                placeholder = { Text(stringResource(R.string.transaction_quick_add)) },
+                leadingIcon = { Icon(Icons.Filled.FlashOn, null, tint = Emerald400) },
+                shape = RoundedCornerShape(12.dp),
+                singleLine = true
+            )
+            
+            Button(
+                onClick = { viewModel.scanReceiptMock() },
+                enabled = !state.isScanning,
+                modifier = Modifier.height(56.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Emerald500.copy(alpha = 0.15f), contentColor = Emerald500),
+                contentPadding = PaddingValues(horizontal = 16.dp)
+            ) {
+                if (state.isScanning) {
+                    CircularProgressIndicator(Modifier.size(24.dp), strokeWidth = 2.dp, color = Emerald500)
+                } else {
+                    Icon(Icons.Filled.CameraAlt, "Scan")
+                    Spacer(Modifier.width(4.dp))
+                    Text("Scan")
+                }
+            }
+        }
 
         Spacer(Modifier.height(16.dp))
 
