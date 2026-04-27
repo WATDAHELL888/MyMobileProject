@@ -12,21 +12,38 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 // ── Group List ──
-data class GroupListState(val groups: List<Group> = emptyList(), val isLoading: Boolean = true)
+data class GroupListState(
+    val groups: List<Group> = emptyList(),
+    val isLoading: Boolean = true,
+    val isSeeding: Boolean = false,
+    val seedMessage: String? = null
+)
 
 @HiltViewModel
 class GroupListViewModel @Inject constructor(
-    private val repo: GroupRepository
+    private val repo: GroupRepository,
+    private val mockSeeder: com.example.mymobileproject.data.mock.GroupMockDataSeeder
 ) : ViewModel() {
     private val _state = MutableStateFlow(GroupListState())
     val state: StateFlow<GroupListState> = _state.asStateFlow()
     init {
         viewModelScope.launch {
             repo.getUserGroups().collect { groups ->
-                _state.value = GroupListState(groups = groups, isLoading = false)
+                _state.value = _state.value.copy(groups = groups, isLoading = false)
             }
         }
     }
+
+    fun seedMockData() {
+        viewModelScope.launch {
+            _state.update { it.copy(isSeeding = true, seedMessage = null) }
+            mockSeeder.seed()
+                .onSuccess { _state.update { it.copy(isSeeding = false, seedMessage = "✅ Mock data created!") } }
+                .onFailure { e -> _state.update { it.copy(isSeeding = false, seedMessage = "❌ ${e.message}") } }
+        }
+    }
+
+    fun clearSeedMessage() { _state.update { it.copy(seedMessage = null) } }
 }
 
 // ── Create Group ──
@@ -75,9 +92,14 @@ data class GroupDetailState(
     val settlements: List<Settlement> = emptyList(),
     val balances: Map<String, Double> = emptyMap(),
     val categorySummary: Map<TransactionCategory, Double> = emptyMap(),
+    val memberSpending: Map<String, Double> = emptyMap(),
     val topSpender: Pair<String, Double>? = null,
+    val totalExpenses: Double = 0.0,
     val selectedTab: Int = 0,
-    val isLoading: Boolean = true
+    val isLoading: Boolean = true,
+    val newMemberName: String = "",
+    val isAddingMember: Boolean = false,
+    val isDeleted: Boolean = false
 )
 
 @HiltViewModel
@@ -107,15 +129,45 @@ class GroupDetailViewModel @Inject constructor(
                 val topSpender = memberSpending.maxByOrNull { it.value }?.let {
                     (memberNames[it.key] ?: it.key) to it.value
                 }
+                val totalExpenses = expenses.sumOf { it.amount }
                 _state.update {
-                    it.copy(expenses = expenses, settlements = settlements, balances = balances,
-                        categorySummary = catSummary, topSpender = topSpender, isLoading = false)
+                    it.copy(
+                        expenses = expenses, settlements = settlements, balances = balances,
+                        categorySummary = catSummary, memberSpending = memberSpending,
+                        topSpender = topSpender, totalExpenses = totalExpenses, isLoading = false
+                    )
                 }
             }
         }
     }
 
     fun selectTab(idx: Int) { _state.update { it.copy(selectedTab = idx) } }
+
+    fun updateNewMemberName(v: String) { _state.update { it.copy(newMemberName = v) } }
+
+    fun addMember() {
+        val name = _state.value.newMemberName.trim()
+        if (name.isEmpty()) return
+        viewModelScope.launch {
+            _state.update { it.copy(isAddingMember = true) }
+            repo.addMember(groupId, name)
+                .onSuccess { _state.update { it.copy(newMemberName = "", isAddingMember = false) } }
+                .onFailure { _state.update { it.copy(isAddingMember = false) } }
+        }
+    }
+
+    fun deleteExpense(expenseId: String) {
+        viewModelScope.launch {
+            repo.deleteExpense(groupId, expenseId)
+        }
+    }
+
+    fun deleteGroup() {
+        viewModelScope.launch {
+            repo.deleteGroup(groupId)
+                .onSuccess { _state.update { it.copy(isDeleted = true) } }
+        }
+    }
 
     private fun calculateBalances(expenses: List<GroupExpense>, names: Map<String, String>): Map<String, Double> {
         val bal = mutableMapOf<String, Double>()
@@ -135,6 +187,7 @@ data class AddGroupExpenseState(
     val paidBy: String = "",
     val splitType: SplitType = SplitType.EQUAL,
     val customSplits: Map<String, String> = emptyMap(),
+    val splitWithMembers: Set<String> = emptySet(),  // NEW: who to split with
     val group: Group? = null,
     val isSaving: Boolean = false,
     val saved: Boolean = false,
@@ -155,8 +208,12 @@ class AddGroupExpenseViewModel @Inject constructor(
             repo.getGroup(groupId).collect { group ->
                 if (group != null) {
                     _state.update {
-                        it.copy(group = group, paidBy = group.members.firstOrNull() ?: "",
-                            customSplits = group.members.associateWith { "" })
+                        it.copy(
+                            group = group,
+                            paidBy = group.members.firstOrNull() ?: "",
+                            splitWithMembers = group.members.toSet(),  // default: all members
+                            customSplits = group.members.associateWith { "" }
+                        )
                     }
                 }
             }
@@ -172,17 +229,32 @@ class AddGroupExpenseViewModel @Inject constructor(
         _state.update { it.copy(customSplits = it.customSplits + (uid to v)) }
     }
 
+    // Toggle member in/out of split
+    fun toggleSplitMember(uid: String) {
+        _state.update {
+            val newSet = if (uid in it.splitWithMembers) it.splitWithMembers - uid else it.splitWithMembers + uid
+            it.copy(splitWithMembers = newSet)
+        }
+    }
+
     fun save() {
         val s = _state.value
         val amt = s.amount.toDoubleOrNull() ?: return
         val group = s.group ?: return
+        val splitMembers = s.splitWithMembers.toList()
+        if (splitMembers.isEmpty()) return
+
         val splits: Map<String, Double> = when (s.splitType) {
             SplitType.EQUAL -> {
-                val share = amt / group.members.size
-                group.members.associateWith { share }
+                val share = amt / splitMembers.size
+                splitMembers.associateWith { share }
             }
-            SplitType.CUSTOM -> s.customSplits.mapValues { it.value.toDoubleOrNull() ?: 0.0 }
-            SplitType.PERCENTAGE -> s.customSplits.mapValues { (it.value.toDoubleOrNull() ?: 0.0) / 100.0 * amt }
+            SplitType.CUSTOM -> s.customSplits
+                .filterKeys { it in splitMembers }
+                .mapValues { it.value.toDoubleOrNull() ?: 0.0 }
+            SplitType.PERCENTAGE -> s.customSplits
+                .filterKeys { it in splitMembers }
+                .mapValues { (it.value.toDoubleOrNull() ?: 0.0) / 100.0 * amt }
         }
         viewModelScope.launch {
             _state.update { it.copy(isSaving = true) }

@@ -113,6 +113,16 @@ class GroupRepositoryImpl @Inject constructor(
         ).await()
     }
 
+    override suspend fun deleteGroup(groupId: String): Result<Unit> = runCatching {
+        // Delete all expenses in subcollection first
+        val expenses = groupsRef.document(groupId).collection("expenses").get().await()
+        for (doc in expenses.documents) {
+            doc.reference.delete().await()
+        }
+        // Delete the group document
+        groupsRef.document(groupId).delete().await()
+    }
+
     @Suppress("UNCHECKED_CAST")
     private fun docToGroup(id: String, data: Map<String, Any>?): Group? {
         data ?: return null

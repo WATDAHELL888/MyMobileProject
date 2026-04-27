@@ -1,6 +1,7 @@
 package com.example.mymobileproject.navigation
 
 sealed class Screen(val route: String) {
+    data object Splash : Screen("splash")
     data object Login : Screen("login")
     data object Dashboard : Screen("dashboard")
     data object TransactionList : Screen("transactions")

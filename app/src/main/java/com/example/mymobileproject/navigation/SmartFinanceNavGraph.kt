@@ -49,6 +49,7 @@ import com.example.mymobileproject.presentation.group.GroupListScreen
 import com.example.mymobileproject.presentation.receipt.ReceiptScanScreen
 import com.example.mymobileproject.presentation.transaction.AddTransactionScreen
 import com.example.mymobileproject.presentation.transaction.TransactionListScreen
+import com.example.mymobileproject.presentation.splash.SplashScreen
 import com.example.mymobileproject.ui.theme.DarkCard
 
 data class BottomNavItem(
@@ -85,7 +86,7 @@ fun SmartFinanceNavGraph(
     isLoggedIn: Boolean,
     navController: NavHostController = rememberNavController()
 ) {
-    val startDestination = if (isLoggedIn) Screen.Dashboard.route else Screen.Login.route
+    val startDestination = Screen.Splash.route
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
@@ -135,6 +136,22 @@ fun SmartFinanceNavGraph(
             popEnterTransition = { fadeIn(tween(250)) },
             popExitTransition = { fadeOut(tween(250)) }
         ) {
+            // ── Splash ──
+            composable(
+                route = Screen.Splash.route,
+                enterTransition = { fadeIn(tween(0)) },
+                exitTransition = { fadeOut(tween(500)) }
+            ) {
+                SplashScreen(
+                    onFinished = {
+                        val dest = if (isLoggedIn) Screen.Dashboard.route else Screen.Login.route
+                        navController.navigate(dest) {
+                            popUpTo(Screen.Splash.route) { inclusive = true }
+                        }
+                    }
+                )
+            }
+
             // ── Login ──
             composable(Screen.Login.route) {
                 LoginScreen(

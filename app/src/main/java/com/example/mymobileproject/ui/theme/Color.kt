@@ -13,6 +13,9 @@ val Blue400 = Color(0xFF60A5FA)
 val Blue500 = Color(0xFF3B82F6)
 val Blue600 = Color(0xFF2563EB)
 
+// ── Accent (Purple) ──
+val Purple400 = Color(0xFFA78BFA)
+
 // ── Surface / Background (Deep Dark) ──
 val DarkBg = Color(0xFF0F172A)
 val DarkSurface = Color(0xFF1E293B)

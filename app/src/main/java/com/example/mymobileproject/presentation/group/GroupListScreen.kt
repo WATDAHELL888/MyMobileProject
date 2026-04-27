@@ -30,6 +30,16 @@ fun GroupListScreen(
     viewModel: GroupListViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    // Show seed message
+    LaunchedEffect(state.seedMessage) {
+        state.seedMessage?.let {
+            snackbarHostState.showSnackbar(it)
+            viewModel.clearSeedMessage()
+        }
+    }
+
     Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
         if (state.groups.isEmpty() && !state.isLoading) {
             Column(Modifier.align(Alignment.Center), horizontalAlignment = Alignment.CenterHorizontally) {
@@ -37,12 +47,44 @@ fun GroupListScreen(
                 Spacer(Modifier.height(8.dp))
                 Text(stringResource(R.string.group_empty), color = TextSecondary)
                 Text(stringResource(R.string.group_empty_subtitle), color = TextTertiary, style = MaterialTheme.typography.bodySmall)
+                Spacer(Modifier.height(24.dp))
+                // Mock data button
+                OutlinedButton(
+                    onClick = { viewModel.seedMockData() },
+                    enabled = !state.isSeeding,
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    if (state.isSeeding) {
+                        CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp, color = Emerald400)
+                        Spacer(Modifier.width(8.dp))
+                        Text("Creating mock data...", color = TextSecondary)
+                    } else {
+                        Text("🧪", fontSize = 16.sp)
+                        Spacer(Modifier.width(8.dp))
+                        Text("Load Demo Data", color = Emerald400)
+                    }
+                }
             }
         } else {
             LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 item {
-                    Text(stringResource(R.string.group_title), style = MaterialTheme.typography.headlineLarge,
-                        color = MaterialTheme.colorScheme.onBackground)
+                    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                        Text(stringResource(R.string.group_title), style = MaterialTheme.typography.headlineLarge,
+                            color = MaterialTheme.colorScheme.onBackground, modifier = Modifier.weight(1f))
+                        // Seed button always visible
+                        OutlinedButton(
+                            onClick = { viewModel.seedMockData() },
+                            enabled = !state.isSeeding,
+                            shape = RoundedCornerShape(10.dp),
+                            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
+                        ) {
+                            if (state.isSeeding) {
+                                CircularProgressIndicator(Modifier.size(14.dp), strokeWidth = 2.dp, color = Emerald400)
+                            } else {
+                                Text("🧪 Demo", style = MaterialTheme.typography.labelMedium, color = Emerald400)
+                            }
+                        }
+                    }
                     Spacer(Modifier.height(8.dp))
                 }
                 items(state.groups) { group ->
@@ -67,6 +109,10 @@ fun GroupListScreen(
                 item { Spacer(Modifier.height(80.dp)) }
             }
         }
+
+        // Snackbar
+        SnackbarHost(hostState = snackbarHostState, modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 72.dp))
+
         FloatingActionButton(
             onClick = onNavigateToCreate,
             modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),

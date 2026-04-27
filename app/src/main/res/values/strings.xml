@@ -76,6 +76,15 @@
     <string name="group_empty_subtitle">Create a group to split expenses with friends</string>
     <string name="group_top_spender">Top Spender</string>
     <string name="group_category_summary">Category Summary</string>
+    <string name="group_summary">Summary</string>
+    <string name="group_total_expenses">Total Expenses</string>
+    <string name="group_member_spending">Member Spending</string>
+    <string name="group_split_with">Split with</string>
+    <string name="group_select_all">Select All</string>
+    <string name="group_paid_for">Paid for</string>
+    <string name="group_expense_count">%d expenses</string>
+    <string name="group_all_settled">✅ All settled! No debts remaining.</string>
+    <string name="group_delete_expense">Delete expense</string>
 
     <!-- AI Chat -->
     <string name="ai_chat_title">AI Financial Advisor</string>
