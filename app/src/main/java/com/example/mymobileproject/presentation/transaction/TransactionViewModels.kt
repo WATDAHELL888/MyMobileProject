@@ -89,19 +89,50 @@ class AddTransactionViewModel @Inject constructor(
         }
     }
 
-    fun scanReceiptMock() {
+    fun processReceiptImage(bitmap: android.graphics.Bitmap) {
+        val image = com.google.mlkit.vision.common.InputImage.fromBitmap(bitmap, 0)
+        val recognizer = com.google.mlkit.vision.text.TextRecognition.getClient(com.google.mlkit.vision.text.latin.TextRecognizerOptions.DEFAULT_OPTIONS)
+
         viewModelScope.launch {
             _state.update { it.copy(isScanning = true, error = null) }
-            kotlinx.coroutines.delay(1500) // Simulate OCR processing
-            _state.update {
-                it.copy(
-                    isScanning = false,
-                    amount = "120",
-                    note = "Starbucks Coffee",
-                    type = TransactionType.EXPENSE,
-                    category = TransactionCategory.FOOD
-                )
-            }
         }
+
+        recognizer.process(image)
+            .addOnSuccessListener { visionText ->
+                var extractedAmount = ""
+                var extractedNote = "Scanned Receipt"
+                
+                // Simple heuristic: find the largest number, or look for '฿' or '$'
+                val regex = Regex("""\b\d+(?:\.\d{1,2})?\b""")
+                val amounts = mutableListOf<Double>()
+                for (block in visionText.textBlocks) {
+                    val text = block.text.replace(",", "")
+                    regex.findAll(text).forEach { matchResult ->
+                        matchResult.value.toDoubleOrNull()?.let { amounts.add(it) }
+                    }
+                    if (text.length > 3 && !text.contains(Regex("""\d"""))) {
+                        extractedNote = text.take(20)
+                    }
+                }
+                
+                if (amounts.isNotEmpty()) {
+                    extractedAmount = amounts.maxOrNull()?.toString() ?: ""
+                }
+
+                _state.update {
+                    it.copy(
+                        isScanning = false,
+                        amount = extractedAmount,
+                        note = extractedNote,
+                        type = TransactionType.EXPENSE,
+                        category = TransactionCategory.FOOD // Guess or keep default
+                    )
+                }
+            }
+            .addOnFailureListener { e ->
+                _state.update {
+                    it.copy(isScanning = false, error = "Failed to scan text: ${e.message}")
+                }
+            }
     }
 }

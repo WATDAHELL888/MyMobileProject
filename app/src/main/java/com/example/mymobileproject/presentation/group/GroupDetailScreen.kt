@@ -380,21 +380,30 @@ private fun SummaryTab(state: GroupDetailState, memberNames: Map<String, String>
                     Spacer(Modifier.height(8.dp))
                     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                         OutlinedTextField(
-                            value = state.newMemberName,
-                            onValueChange = { viewModel.updateNewMemberName(it) },
+                            value = state.newMemberEmail,
+                            onValueChange = { viewModel.updateNewMemberEmail(it) },
                             modifier = Modifier.weight(1f),
-                            placeholder = { Text("Enter name") },
+                            placeholder = { Text("Enter Gmail address") },
                             shape = RoundedCornerShape(12.dp),
-                            singleLine = true
+                            singleLine = true,
+                            isError = state.addMemberError != null
                         )
                         Spacer(Modifier.width(8.dp))
                         IconButton(
                             onClick = { viewModel.addMember() },
-                            enabled = !state.isAddingMember
+                            enabled = !state.isAddingMember && state.newMemberEmail.isNotBlank()
                         ) {
                             if (state.isAddingMember) CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp)
                             else Icon(Icons.Filled.PersonAdd, "Add", tint = Emerald400)
                         }
+                    }
+                    if (state.addMemberError != null) {
+                        Text(
+                            text = state.addMemberError,
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodySmall,
+                            modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+                        )
                     }
                 }
             }

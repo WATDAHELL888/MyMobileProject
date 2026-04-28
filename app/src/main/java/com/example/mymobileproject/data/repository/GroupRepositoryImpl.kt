@@ -103,12 +103,25 @@ class GroupRepositoryImpl @Inject constructor(
         groupsRef.document(groupId).collection("expenses").document(expenseId).delete().await()
     }
 
-    override suspend fun addMember(groupId: String, memberName: String): Result<Unit> = runCatching {
-        val tempId = UUID.randomUUID().toString().take(8)
+    override suspend fun addMember(groupId: String, email: String): Result<Unit> = runCatching {
+        // Find user by email in users collection
+        val usersSnapshot = firestore.collection("users")
+            .whereEqualTo("email", email)
+            .get()
+            .await()
+
+        if (usersSnapshot.isEmpty) {
+            throw Exception("User not found")
+        }
+
+        val userDoc = usersSnapshot.documents.first()
+        val uid = userDoc.id
+        val displayName = userDoc.getString("displayName") ?: "Unknown User"
+
         groupsRef.document(groupId).update(
             mapOf(
-                "members" to com.google.firebase.firestore.FieldValue.arrayUnion(tempId),
-                "memberNames.$tempId" to memberName
+                "members" to com.google.firebase.firestore.FieldValue.arrayUnion(uid),
+                "memberNames.$uid" to displayName
             )
         ).await()
     }

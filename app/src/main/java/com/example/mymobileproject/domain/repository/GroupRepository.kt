@@ -11,6 +11,6 @@ interface GroupRepository {
     suspend fun createGroup(name: String, memberNames: List<String>): Result<String>
     suspend fun addExpense(groupId: String, expense: GroupExpense): Result<String>
     suspend fun deleteExpense(groupId: String, expenseId: String): Result<Unit>
-    suspend fun addMember(groupId: String, memberName: String): Result<Unit>
+    suspend fun addMember(groupId: String, email: String): Result<Unit>
     suspend fun deleteGroup(groupId: String): Result<Unit>
 }

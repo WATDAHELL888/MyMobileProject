@@ -97,8 +97,9 @@ data class GroupDetailState(
     val totalExpenses: Double = 0.0,
     val selectedTab: Int = 0,
     val isLoading: Boolean = true,
-    val newMemberName: String = "",
+    val newMemberEmail: String = "",
     val isAddingMember: Boolean = false,
+    val addMemberError: String? = null,
     val isDeleted: Boolean = false,
     val aiAnalysis: String? = null,
     val isAnalyzing: Boolean = false
@@ -146,16 +147,16 @@ class GroupDetailViewModel @Inject constructor(
 
     fun selectTab(idx: Int) { _state.update { it.copy(selectedTab = idx) } }
 
-    fun updateNewMemberName(v: String) { _state.update { it.copy(newMemberName = v) } }
+    fun updateNewMemberEmail(v: String) { _state.update { it.copy(newMemberEmail = v, addMemberError = null) } }
 
     fun addMember() {
-        val name = _state.value.newMemberName.trim()
-        if (name.isEmpty()) return
+        val email = _state.value.newMemberEmail.trim()
+        if (email.isEmpty()) return
         viewModelScope.launch {
-            _state.update { it.copy(isAddingMember = true) }
-            repo.addMember(groupId, name)
-                .onSuccess { _state.update { it.copy(newMemberName = "", isAddingMember = false) } }
-                .onFailure { _state.update { it.copy(isAddingMember = false) } }
+            _state.update { it.copy(isAddingMember = true, addMemberError = null) }
+            repo.addMember(groupId, email)
+                .onSuccess { _state.update { it.copy(newMemberEmail = "", isAddingMember = false) } }
+                .onFailure { e -> _state.update { it.copy(isAddingMember = false, addMemberError = e.message) } }
         }
     }
 

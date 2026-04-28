@@ -20,9 +20,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import android.Manifest
+import android.content.pm.PackageManager
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.mymobileproject.R
@@ -39,6 +46,32 @@ fun AddTransactionScreen(
     val state by viewModel.state.collectAsState()
 
     LaunchedEffect(state.saved) { if (state.saved) onNavigateBack() }
+
+    val context = LocalContext.current
+    var hasCamPermission by remember { 
+        mutableStateOf(
+            ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
+        ) 
+    }
+
+    val cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmap ->
+        if (bitmap != null) {
+            viewModel.processReceiptImage(bitmap)
+        }
+    }
+
+    val permissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+        hasCamPermission = isGranted
+        if (isGranted) {
+            try {
+                cameraLauncher.launch(null)
+            } catch (e: Exception) {
+                Toast.makeText(context, "No camera app found", Toast.LENGTH_SHORT).show()
+            }
+        } else {
+            Toast.makeText(context, "Camera permission denied", Toast.LENGTH_SHORT).show()
+        }
+    }
 
     Column(
         modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).padding(16.dp)
@@ -66,7 +99,17 @@ fun AddTransactionScreen(
             )
             
             Button(
-                onClick = { viewModel.scanReceiptMock() },
+                onClick = { 
+                    if (hasCamPermission) {
+                        try {
+                            cameraLauncher.launch(null)
+                        } catch (e: Exception) {
+                            Toast.makeText(context, "No camera app found", Toast.LENGTH_SHORT).show()
+                        }
+                    } else {
+                        permissionLauncher.launch(Manifest.permission.CAMERA)
+                    }
+                },
                 enabled = !state.isScanning,
                 modifier = Modifier.height(56.dp),
                 shape = RoundedCornerShape(12.dp),
