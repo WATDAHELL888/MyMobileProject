@@ -80,6 +80,8 @@
 
 ---
 
+## WIREFRAME
+![alt text](https://github.com/WATDAHELL888/MyMobileProject/blob/master/Wireframe%20for%20mobile%20project.jpg?raw=true)  
 
 ## Presentation video :
 https://drive.google.com/drive/folders/12sivb5QRcVPpbY3aKHknDuLZr2Pw9BXK?usp=drive_link
